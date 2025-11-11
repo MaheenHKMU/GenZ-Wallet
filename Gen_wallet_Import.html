@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bulk Import — GenZ Wallet</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  /* ---------- IMPORT SPECIFIC STYLES ---------- */
+  .header {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  
+  .header::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.06) inset;
+  }
+  
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(to right, var(--gold), var(--accent-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .header p {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+  
+  /* ACTION BUTTONS */
+  .action-buttons {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+  
+  .action-card {
+    flex: 1;
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(2,6,20,0.8), inset 0 1px rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+  }
+  
+  .action-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.06) inset;
+  }
+  
+  .action-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  }
+  
+  .action-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #e6eef8;
+  }
+  
+  .action-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+  }
+  
+  /* INPUT AREA */
+  .input-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  
+  .input-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.06) inset;
+  }
+  
+  .input-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: var(--gold);
+  }
+  
+  .input-card p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 180px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 16px;
+    color: #e6eef8;
+    font-size: 15px;
+    resize: none;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+  
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    background: rgba(15, 23, 42, 0.9);
+  }
+  
+  textarea::placeholder {
+    color: var(--muted);
+  }
+  
+  /* PARSE BUTTON */
+  .parse-btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(145deg, var(--gold), var(--accent-yellow));
+    color: #0b1220;
+    font-weight: 700;
+    font-size: 16px;
+    border: none;
+    border-radius: var(--radius);
+    margin-top: 20px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+  
+  .parse-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  
+  .parse-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  
+  /* EXAMPLES */
+  .examples {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .examples::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.06) inset;
+  }
+  
+  .examples h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    color: var(--gold);
+  }
+  
+  .example-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--muted);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .example-box:hover {
+    background: rgba(250, 204, 21, 0.1);
+    border-color: rgba(250, 204, 21, 0.2);
+  }
+  
+  .example-box:last-child {
+    margin-bottom: 0;
+  }
+</style>
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="logo">$</div>
+        <div>
+          <h1>GenZ Wallet</h1>
+          <small>Elite Finance</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="menu" role="navigation">
+      <a href="Gen_wallet_dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="Gen_wallet_calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+      <a href="Gen_wallet_Transaction.html"><span class="nav-icon">💵</span><span class="nav-label">Transactions</span></a>
+      <a href="Gen_wallet_goal.html"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a href="Gen_wallet_cap.html"><span class="nav-icon">🛡️</span><span class="nav-label">Spending Caps</span></a>
+      <a href="Gen_wallet_Invest.html"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></a>
+      <a href="Gen_wallet_Import.html" class="active"><span class="nav-icon">⬆️</span><span class="nav-label">Import</span></a>
+      <a href="Gen_wallet_AI.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+      <a href="Gen_wallet_Learn.html"><span class="nav-icon">📘</span><span class="nav-label">Learn</span></a>
+      <a href="Gen_wallet_learderborad.html"><span class="nav-icon">🏆</span><span class="nav-label">Leaderboard</span></a>
+    </nav>
+    
+    <button id="themeToggle" class="theme-toggle">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-text">Light Theme</span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="header">
+      <h1>Bulk Import 🚀</h1>
+      <p>Import multiple transactions at once — from text or bank statements</p>
+    </div>
+
+    <div class="action-buttons">
+      <div class="action-card">
+        <div class="action-icon" style="background: linear-gradient(145deg, var(--accent-green), #16a34a)">📋</div>
+        <h3 class="action-title">Type Your Expenses</h3>
+        <p class="action-desc">Manually enter your expenses in natural language for quick processing</p>
+        <button class="btn btn-primary">Select Option</button>
+      </div>
+      
+      <div class="action-card">
+        <div class="action-icon" style="background: linear-gradient(145deg, var(--accent-blue), #2563eb)">📤</div>
+        <h3 class="action-title">Upload Bank Statement</h3>
+        <p class="action-desc">Upload a CSV or PDF bank statement for automatic parsing</p>
+        <button class="btn btn-secondary">Select Option</button>
+      </div>
+    </div>
+
+    <div class="input-card">
+      <h3>Enter Your Monthly Expenses</h3>
+      <p>
+        Just type naturally! Example:
+        <em>“Spent $50 at Starbucks on Jan 15, bought groceries for $120 at Walmart yesterday, paid $1200 rent on the 1st.”</em>
+      </p>
+      <textarea placeholder="Type your expenses here..."></textarea>
+      <button class="parse-btn">⚡ Parse with AI</button>
+    </div>
+
+    <div class="examples">
+      <h3>💡 Examples to Try</h3>
+      <div class="example-box">
+        "January expenses: Coffee at Starbucks $45 on Jan 5, groceries $230 at Costco on Jan 10, rent $1500 on Jan 1, salary received $3000 on Jan 15, Uber rides $85 throughout the month"
+      </div>
+      <div class="example-box">
+        "This month I spent $120 on Netflix and subscriptions, paid $80 for gym membership, bought textbooks for $300, and earned $500 from my part-time job"
+      </div>
+    </div>
+  </main>
+</body>
+<script>
+  // Toggle sidebar functionality
+  document.querySelector('.brand').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('full-width');
+  });
+  
+  // nav active toggle (visual only)
+  document.querySelectorAll('nav.menu a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.menu a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+  
+  // Theme toggle functionality with global sync
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.querySelector('.theme-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  // Load saved theme preference
+  function loadThemePreference() {
+    const savedTheme = localStorage.getItem('genzWalletTheme');
+    if (savedTheme === 'bright') {
+      document.body.classList.add('bright-theme');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+    } else {
+      document.body.classList.remove('bright-theme');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+    }
+  }
+  
+  // Save theme preference
+  function saveThemePreference(theme) {
+    localStorage.setItem('genzWalletTheme', theme);
+  }
+  
+  // Toggle theme
+  themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('bright-theme');
+    
+    if (document.body.classList.contains('bright-theme')) {
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+      saveThemePreference('bright');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+      saveThemePreference('dark');
+    }
+    
+    // Notify other tabs/windows of theme change
+    localStorage.setItem('themeChange', Date.now());
+  });
+  
+  // Listen for theme changes from other tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'themeChange') {
+      loadThemePreference();
+    }
+  });
+  
+  // Load theme on page load
+  loadThemePreference();
+</script>
+</html>

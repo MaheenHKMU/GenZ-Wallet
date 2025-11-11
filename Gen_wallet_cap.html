@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spending Caps — GenZ Wallet</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  /* ---------- SPENDING CAPS SPECIFIC STYLES ---------- */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  
+  .header::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.06) inset;
+  }
+  
+  .header-content h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(to right, var(--accent-blue), #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .header-content p {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  /* STATS */
+  .stats {
+    margin: 32px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.06) inset;
+  }
+  
+  .stat-title {
+    font-size: 14px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    background: linear-gradient(to right, #e6eef8, #cbd5e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* EMPTY STATE */
+  .empty-state {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.05);
+    margin: 40px auto;
+    text-align: center;
+    padding: 60px 30px;
+    max-width: 600px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .empty-state::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.06) inset;
+  }
+  
+  .empty-icon {
+    font-size: 48px;
+    color: var(--accent-blue);
+    margin-bottom: 20px;
+  }
+  
+  .empty-title {
+    font-weight: 700;
+    font-size: 22px;
+    margin: 0 0 12px 0;
+    color: #e6eef8;
+  }
+  
+  .empty-desc {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+  }
+  
+  /* CAP LIST */
+  .cap-list {
+    margin-top: 40px;
+  }
+  
+  .cap-list h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    color: var(--gold);
+  }
+</style>
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="logo">$</div>
+        <div>
+          <h1>GenZ Wallet</h1>
+          <small>Elite Finance</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="menu" role="navigation">
+      <a href="Gen_wallet_dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="Gen_wallet_calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+      <a href="Gen_wallet_Transaction.html"><span class="nav-icon">💵</span><span class="nav-label">Transactions</span></a>
+      <a href="Gen_wallet_goal.html"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a href="Gen_wallet_cap.html" class="active"><span class="nav-icon">🛡️</span><span class="nav-label">Spending Caps</span></a>
+      <a href="Gen_wallet_Invest.html"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></a>
+      <a href="Gen_wallet_Import.html"><span class="nav-icon">⬆️</span><span class="nav-label">Import</span></a>
+      <a href="Gen_wallet_AI.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+      <a href="Gen_wallet_Learn.html"><span class="nav-icon">📘</span><span class="nav-label">Learn</span></a>
+      <a href="Gen_wallet_learderborad.html"><span class="nav-icon">🏆</span><span class="nav-label">Leaderboard</span></a>
+    </nav>
+    
+    <button id="themeToggle" class="theme-toggle">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-text">Light Theme</span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="header">
+      <div class="header-content">
+        <h1>Spending Caps 🛡️</h1>
+        <p>Set limits on your spending to stay within budget and achieve your financial goals</p>
+      </div>
+      <button class="btn btn-primary">+ New Cap</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-title"><span>📊</span> Total Caps</div>
+        <div class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title"><span>✅</span> Active Caps</div>
+        <div class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title"><span>💰</span> Monthly Savings</div>
+        <div class="stat-value">$0</div>
+      </div>
+    </div>
+
+    <div class="empty-state">
+      <div class="empty-icon">🛡️</div>
+      <h2 class="empty-title">No Spending Caps</h2>
+      <p class="empty-desc">Protect your finances by setting spending limits on different categories. This helps you stay within budget and avoid overspending.</p>
+      <button class="btn btn-primary btn-lg">Create Your First Cap</button>
+    </div>
+
+    <div class="cap-list">
+      <h2>Your Spending Caps</h2>
+      <!-- Cap cards would appear here when caps are created -->
+    </div>
+  </main>
+</body>
+<script>
+  // Toggle sidebar functionality
+  document.querySelector('.brand').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('full-width');
+  });
+  
+  // nav active toggle (visual only)
+  document.querySelectorAll('nav.menu a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.menu a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+  
+  // Theme toggle functionality with global sync
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.querySelector('.theme-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  // Load saved theme preference
+  function loadThemePreference() {
+    const savedTheme = localStorage.getItem('genzWalletTheme');
+    if (savedTheme === 'bright') {
+      document.body.classList.add('bright-theme');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+    } else {
+      document.body.classList.remove('bright-theme');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+    }
+  }
+  
+  // Save theme preference
+  function saveThemePreference(theme) {
+    localStorage.setItem('genzWalletTheme', theme);
+  }
+  
+  // Toggle theme
+  themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('bright-theme');
+    
+    if (document.body.classList.contains('bright-theme')) {
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+      saveThemePreference('bright');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+      saveThemePreference('dark');
+    }
+    
+    // Notify other tabs/windows of theme change
+    localStorage.setItem('themeChange', Date.now());
+  });
+  
+  // Listen for theme changes from other tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'themeChange') {
+      loadThemePreference();
+    }
+  });
+  
+  // Load theme on page load
+  loadThemePreference();
+</script>
+</html>

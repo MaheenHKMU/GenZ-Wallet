@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Investment Simulator — GenZ Wallet</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  /* ---------- INVESTMENT SPECIFIC STYLES ---------- */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  
+  .header-content h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(to right, #10b981, #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .header-content p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 6px 0 0 0;
+  }
+  
+  /* INFO BOX */
+  .info-box {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .info-box::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.06) inset;
+  }
+  
+  .info-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .info-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #10b981, #059669);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+  
+  .info-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #10b981;
+  }
+  
+  .info-content {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  
+  .learn-link {
+    align-self: flex-start;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.2s ease;
+  }
+  
+  .learn-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+  }
+  
+  /* STATS CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 36px;
+  }
+  
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .stat-title {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: white;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    background: linear-gradient(to right, #e6eef8, #cbd5e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .stat-description {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: auto;
+  }
+  
+  .trend {
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .trend.up {
+    color: var(--success);
+  }
+  
+  .trend.down {
+    color: var(--danger);
+  }
+  
+  /* INVESTMENT CTA */
+  .cta-section {
+    text-align: center;
+    margin-top: 40px;
+    padding: 50px 30px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cta-section::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.06) inset;
+  }
+  
+  .cta-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(145deg, #10b981, #059669);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 24px auto;
+    font-size: 32px;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  }
+  
+  .cta-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 12px 0;
+    color: #e6eef8;
+  }
+  
+  .cta-description {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto 24px auto;
+    line-height: 1.6;
+  }
+  
+  /* INVESTMENT OPTIONS */
+  .investment-options {
+    margin: 40px 0;
+  }
+  
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+  }
+  
+  .option-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    border-color: rgba(255,255,255,0.1);
+  }
+  
+  .option-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.06) inset;
+  }
+  
+  .option-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    margin: 0 auto 16px auto;
+  }
+  
+  .option-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #e6eef8;
+  }
+  
+  .option-description {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  
+  .option-return {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--success);
+  }
+</style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="logo">$</div>
+        <div>
+          <h1>GenZ Wallet</h1>
+          <small>Elite Finance</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="menu" role="navigation">
+      <a href="Gen_wallet_dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="Gen_wallet_calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+      <a href="Gen_wallet_Transaction.html"><span class="nav-icon">💵</span><span class="nav-label">Transactions</span></a>
+      <a herf="Gen_wallet_goal"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a href="Gen_wallet_cap.html"><span class="nav-icon">🛡️</span><span class="nav-label">Spending Caps</span></a>
+      <a href="Gen_wallet_Invest.html" class="active"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></a>
+      <a href="Gen_wallet_Import.html"><span class="nav-icon">⬆️</span><span class="nav-label">Import</span></a>
+      <a href="Gen_wallet_AI.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+      <a href="Gen_wallet_Learn.html"><span class="nav-icon">📘</span><span class="nav-label">Learn</span></a>
+      <a href="Gen_wallet_learderborad.html"><span class="nav-icon">🏆</span><span class="nav-label">Leaderboard</span></a>
+    </nav>
+    
+    <button id="themeToggle" class="theme-toggle">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-text">Light Theme</span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="header">
+      <div class="header-content">
+        <h1>Investment Simulator</h1>
+        <p>Simulate your investments and see how they grow over time</p>
+      </div>
+      <button class="btn btn-secondary">Start Investing</button>
+    </div>
+
+    <div class="info-box">
+      <div class="info-header">
+        <div class="info-icon">📈</div>
+        <h3 class="info-title">Investment Simulator</h3>
+      </div>
+      <p class="info-content">Learn how to invest your money and grow your wealth with our investment simulator. Try different strategies and see the results in real-time. Our tool helps you understand the potential returns and risks of various investment options.</p>
+      <a href="#" class="learn-link">Learn More About Investing →</a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="card stat-card">
+        <div class="stat-header">
+          <h3 class="stat-title">Total Investments</h3>
+          <div class="stat-icon" style="background: linear-gradient(145deg, #f59e0b, #d97706)">💰</div>
+        </div>
+        <div class="stat-value">$10,000</div>
+        <div class="stat-description">Initial Investment</div>
+      </div>
+      
+      <div class="card stat-card">
+        <div class="stat-header">
+          <h3 class="stat-title">Current Value</h3>
+          <div class="stat-icon" style="background: linear-gradient(145deg, #10b981, #059669)">📊</div>
+        </div>
+        <div class="stat-value">$12,500</div>
+        <div class="trend up">↑ 25% Return</div>
+        <div class="stat-description">After 1 Year</div>
+      </div>
+      
+      <div class="card stat-card">
+        <div class="stat-header">
+          <h3 class="stat-title">Profit</h3>
+          <div class="stat-icon" style="background: linear-gradient(145deg, #3b82f6, #1d4ed8)">💵</div>
+        </div>
+        <div class="stat-value">$2,500</div>
+        <div class="trend up">↑ $208/mo</div>
+        <div class="stat-description">Average Monthly</div>
+      </div>
+    </div>
+
+    <div class="investment-options">
+      <h2 class="card-title">Investment Options</h2>
+      <div class="options-grid">
+        <div class="option-card">
+          <div class="option-icon" style="background: linear-gradient(145deg, #3b82f6, #1d4ed8)">🏦</div>
+          <h3 class="option-title">High-Yield Savings</h3>
+          <p class="option-description">Safe and stable returns with easy access to your funds. FDIC insured up to $250,000.</p>
+          <div class="option-return">4.5% APY</div>
+        </div>
+        
+        <div class="option-card">
+          <div class="option-icon" style="background: linear-gradient(145deg, #f59e0b, #d97706)">📊</div>
+          <h3 class="option-title">Index Funds</h3>
+          <p class="option-description">Diversified portfolios that track market indices. Low fees and consistent long-term growth.</p>
+          <div class="option-return">8-10% Annual Return</div>
+        </div>
+        
+        <div class="option-card">
+          <div class="option-icon" style="background: linear-gradient(145deg, #10b981, #059669)">💼</div>
+          <h3 class="option-title">ETFs</h3>
+          <p class="option-description">Exchange-traded funds offer flexibility and diversification across various sectors.</p>
+          <div class="option-return">7-12% Annual Return</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <div class="cta-icon">🚀</div>
+      <h2 class="cta-title">Ready to Invest?</h2>
+      <p class="cta-description">Start investing today and watch your wealth grow. Our investment simulator will help you make informed decisions based on real market data and historical trends.</p>
+      <button class="btn btn-primary btn-lg">Start Investing Now</button>
+    </div>
+  </main>
+</body>
+<script>
+  // Toggle sidebar functionality
+  document.querySelector('.brand').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('full-width');
+  });
+  
+  // nav active toggle (visual only)
+  document.querySelectorAll('nav.menu a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.menu a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+  
+  // Add hover effects to option cards
+  document.querySelectorAll('.option-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-5px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+  
+  // Theme toggle functionality with global sync
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.querySelector('.theme-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  // Load saved theme preference
+  function loadThemePreference() {
+    const savedTheme = localStorage.getItem('genzWalletTheme');
+    if (savedTheme === 'bright') {
+      document.body.classList.add('bright-theme');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+    } else {
+      document.body.classList.remove('bright-theme');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+    }
+  }
+  
+  // Save theme preference
+  function saveThemePreference(theme) {
+    localStorage.setItem('genzWalletTheme', theme);
+  }
+  
+  // Toggle theme
+  themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('bright-theme');
+    
+    if (document.body.classList.contains('bright-theme')) {
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+      saveThemePreference('bright');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+      saveThemePreference('dark');
+    }
+    
+    // Notify other tabs/windows of theme change
+    localStorage.setItem('themeChange', Date.now());
+  });
+  
+  // Listen for theme changes from other tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'themeChange') {
+      loadThemePreference();
+    }
+  });
+  
+  // Load theme on page load
+  loadThemePreference();
+</script>
+</html>

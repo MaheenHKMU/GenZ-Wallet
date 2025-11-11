@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Assistant — GenZ Wallet</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  /* ---------- AI ASSISTANT SPECIFIC STYLES ---------- */
+  .header {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  
+  .header::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.06) inset;
+  }
+  
+  .header-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(to right, #22c55e, #16a34a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .header-subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+  
+  /* QUICK QUESTIONS */
+  .quick-section {
+    margin-bottom: 32px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    color: #e6eef8;
+  }
+  
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .quick-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .quick-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(2,6,20,0.8), inset 0 1px rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+  }
+  
+  .quick-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.06) inset;
+  }
+  
+  .quick-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  .quick-text {
+    font-weight: 600;
+    font-size: 15px;
+    color: #e6eef8;
+  }
+  
+  /* CHAT WINDOW */
+  .chat-window {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    height: 500px;
+    margin-bottom: 24px;
+  }
+  
+  .chat-window::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.06) inset;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .chat-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    max-width: 85%;
+  }
+  
+  .chat-message.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+  
+  .chat-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  
+  .ai-icon {
+    background: linear-gradient(145deg, #22c55e, #16a34a);
+    color: white;
+  }
+  
+  .user-icon {
+    background: linear-gradient(145deg, #60a5fa, #3b82f6);
+    color: white;
+  }
+  
+  .chat-bubble {
+    background: rgba(255,255,255,0.06);
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 15px;
+    color: #e6eef8;
+    border: 1px solid rgba(255,255,255,0.03);
+    line-height: 1.5;
+  }
+  
+  .chat-message.user .chat-bubble {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.2);
+  }
+  
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.03);
+    width: fit-content;
+  }
+  
+  .typing-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: typing 1.4s infinite ease-in-out;
+  }
+  
+  .typing-dot:nth-child(1) { animation-delay: 0s; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+  }
+  
+  /* INPUT AREA */
+  .chat-input-container {
+    padding: 0 24px 24px 24px;
+  }
+  
+  .chat-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 6px 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .chat-input::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.06) inset;
+  }
+  
+  .chat-input-field {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e6eef8;
+    font-size: 15px;
+    padding: 14px 4px;
+    height: 50px;
+  }
+  
+  .chat-input-field::placeholder {
+    color: var(--muted);
+  }
+  
+  .send-btn {
+    background: linear-gradient(145deg, var(--accent-green), #16a34a);
+    border: none;
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  .send-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  }
+  
+  .send-btn:active {
+    transform: scale(0.95);
+  }
+  
+  /* FEATURES SECTION */
+  .features-section {
+    margin-top: 40px;
+  }
+  
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+  
+  .feature-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .feature-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.06) inset;
+  }
+  
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    margin-bottom: 16px;
+  }
+  
+  .feature-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #e6eef8;
+  }
+  
+  .feature-description {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="logo">$</div>
+        <div>
+          <h1>GenZ Wallet</h1>
+          <small>Elite Finance</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="menu" role="navigation">
+      <a href="Gen_wallet_dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="Gen_wallet_calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+      <a href="Gen_wallet_Transaction.html"><span class="nav-icon">💵</span><span class="nav-label">Transactions</span></a>
+      <a href="Gen_wallet_goal.html"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a href="Gen_wallet_cap.html"><span class="nav-icon">🛡️</span><span class="nav-label">Spending Caps</span></a>
+      <a href="Gen_wallet_Invest.html"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></a>
+      <a href="Gen_wallet_Import.html"><span class="nav-icon">⬆️</span><span class="nav-label">Import</span></a>
+      <a href="Gen_wallet_AI.html" class="active"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+      <a href="Gen_wallet_Learn.html"><span class="nav-icon">📘</span><span class="nav-label">Learn</span></a>
+      <a href="Gen_wallet_learderborad.html"><span class="nav-icon">🏆</span><span class="nav-label">Leaderboard</span></a>
+    </nav>
+    
+    <button id="themeToggle" class="theme-toggle">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-text">Light Theme</span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="header">
+      <h1 class="header-title">AI Assistant 🤖</h1>
+      <p class="header-subtitle">Your personal finance coach, available 24/7. Get instant answers to your money questions and personalized financial advice.</p>
+    </div>
+
+    <div class="quick-section">
+      <h2 class="section-title">Quick Questions</h2>
+      <div class="quick-grid">
+        <div class="quick-card">
+          <div class="quick-icon" style="background: linear-gradient(145deg, var(--accent-green), #16a34a)">💰</div>
+          <div class="quick-text">How can I save more money?</div>
+        </div>
+        <div class="quick-card">
+          <div class="quick-icon" style="background: linear-gradient(145deg, var(--accent-blue), #2563eb)">📉</div>
+          <div class="quick-text">Tips for reducing expenses</div>
+        </div>
+        <div class="quick-card">
+          <div class="quick-icon" style="background: linear-gradient(145deg, var(--accent-purple), #7e22ce)">🎯</div>
+          <div class="quick-text">Help me set a savings goal</div>
+        </div>
+        <div class="quick-card">
+          <div class="quick-icon" style="background: linear-gradient(145deg, var(--accent-yellow), #d97706)">💡</div>
+          <div class="quick-text">Investment advice for students</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-window">
+      <div class="chat-messages">
+        <div class="chat-message">
+          <div class="chat-icon ai-icon">🤖</div>
+          <div class="chat-bubble">
+            Hey there! 👋 I'm your AI finance buddy.  
+            Ask me anything about budgeting, saving, or managing your money!  
+            I'm here to help you make smarter financial decisions.
+          </div>
+        </div>
+        
+        <div class="chat-message">
+          <div class="chat-icon ai-icon">🤖</div>
+          <div class="chat-bubble">
+            For example, you can ask me:
+            <ul style="margin: 8px 0 0 20px; padding: 0;">
+              <li style="margin-bottom: 4px;">"How much should I save each month?"</li>
+              <li style="margin-bottom: 4px;">"What's the best way to pay off debt?"</li>
+              <li>"Should I invest in stocks or bonds?"</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="chat-message user">
+          <div class="chat-icon user-icon">👤</div>
+          <div class="chat-bubble">
+            How can I create a budget?
+          </div>
+        </div>
+        
+        <div class="chat-message">
+          <div class="chat-icon ai-icon">🤖</div>
+          <div class="chat-bubble">
+            Great question! Here's a simple approach to budgeting:
+            <ol style="margin: 8px 0 0 20px; padding: 0;">
+              <li style="margin-bottom: 4px;"><strong>Calculate your income</strong> - Add up all sources</li>
+              <li style="margin-bottom: 4px;"><strong>List your expenses</strong> - Fixed and variable costs</li>
+              <li style="margin-bottom: 4px;"><strong>Set spending limits</strong> - Allocate amounts to each category</li>
+              <li><strong>Track and adjust</strong> - Monitor your spending and refine as needed</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-container">
+      <div class="chat-input">
+        <input type="text" class="chat-input-field" placeholder="Ask me anything about money..." />
+        <button class="send-btn">↑</button>
+      </div>
+    </div>
+    
+    <div class="features-section">
+      <h2 class="section-title">AI Assistant Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background: linear-gradient(145deg, #22c55e, #16a34a)">📊</div>
+          <h3 class="feature-title">Financial Analysis</h3>
+          <p class="feature-description">Get detailed analysis of your spending patterns and personalized recommendations to improve your financial health.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon" style="background: linear-gradient(145deg, #f59e0b, #d97706)">🎯</div>
+          <h3 class="feature-title">Goal Planning</h3>
+          <p class="feature-description">Create and track financial goals with step-by-step plans and progress monitoring to help you achieve them.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon" style="background: linear-gradient(145deg, #3b82f6, #2563eb)">📈</div>
+          <h3 class="feature-title">Investment Insights</h3>
+          <p class="feature-description">Receive personalized investment advice based on your risk tolerance and financial objectives.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+<script>
+  // Toggle sidebar functionality
+  document.querySelector('.brand').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('full-width');
+  });
+  
+  // nav active toggle (visual only)
+  document.querySelectorAll('nav.menu a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.menu a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+  
+  // Add hover effects to quick cards
+  document.querySelectorAll('.quick-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-5px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+  
+  // Add hover effects to feature cards
+  document.querySelectorAll('.feature-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-5px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+  
+  // Chat input functionality
+  const chatInput = document.querySelector('.chat-input-field');
+  const sendButton = document.querySelector('.send-btn');
+  
+  sendButton.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+  
+  function sendMessage() {
+    const message = chatInput.value.trim();
+    if (message) {
+      // Add user message to chat
+      const chatMessages = document.querySelector('.chat-messages');
+      const userMessage = document.createElement('div');
+      userMessage.className = 'chat-message user';
+      userMessage.innerHTML = `
+        <div class="chat-icon user-icon">👤</div>
+        <div class="chat-bubble">${message}</div>
+      `;
+      chatMessages.appendChild(userMessage);
+      
+      // Clear input
+      chatInput.value = '';
+      
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // Simulate AI response after a delay
+      setTimeout(() => {
+        const aiResponse = document.createElement('div');
+        aiResponse.className = 'chat-message';
+        aiResponse.innerHTML = `
+          <div class="chat-icon ai-icon">🤖</div>
+          <div class="chat-bubble">Thanks for your question! I'm analyzing your query and will provide a detailed response shortly. In the meantime, remember that financial planning is a journey, and every step you take toward your goals is valuable.</div>
+        `;
+        chatMessages.appendChild(aiResponse);
+        
+        // Scroll to bottom again
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 1500);
+    }
+  }
+  
+  // Theme toggle functionality with global sync
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.querySelector('.theme-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  // Load saved theme preference
+  function loadThemePreference() {
+    const savedTheme = localStorage.getItem('genzWalletTheme');
+    if (savedTheme === 'bright') {
+      document.body.classList.add('bright-theme');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+    } else {
+      document.body.classList.remove('bright-theme');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+    }
+  }
+  
+  // Save theme preference
+  function saveThemePreference(theme) {
+    localStorage.setItem('genzWalletTheme', theme);
+  }
+  
+  // Toggle theme
+  themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('bright-theme');
+    
+    if (document.body.classList.contains('bright-theme')) {
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+      saveThemePreference('bright');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+      saveThemePreference('dark');
+    }
+    
+    // Notify other tabs/windows of theme change
+    localStorage.setItem('themeChange', Date.now());
+  });
+  
+  // Listen for theme changes from other tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'themeChange') {
+      loadThemePreference();
+    }
+  });
+  
+  // Load theme on page load
+  loadThemePreference();
+</script>
+</html>

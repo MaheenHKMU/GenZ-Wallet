@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Transactions — GenZ Wallet</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  /* ---------- TRANSACTIONS SPECIFIC STYLES ---------- */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .header-content h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(to right, #facc15, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .header-content p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 6px 0 0 0;
+  }
+  
+  /* FILTERS */
+  .filters {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .filters:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(2,6,20,0.7), inset 0 1px rgba(255,255,255,0.03);
+  }
+  
+  .filters::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.04) inset;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 150px;
+  }
+  
+  .filter-label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  
+  .filter-select {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e6eef8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 150px;
+  }
+  
+  .filter-select:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  }
+  
+  /* SEARCH */
+  .search-container {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0 12px;
+    min-width: 200px;
+    transition: all 0.2s ease;
+  }
+  
+  .search-container:focus-within {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  }
+  
+  .search-icon {
+    color: var(--muted);
+    font-size: 16px;
+  }
+  
+  .search-input {
+    background: transparent;
+    border: none;
+    color: #e6eef8;
+    padding: 10px;
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  .search-input:focus {
+    outline: none;
+  }
+  
+  .search-input::placeholder {
+    color: var(--muted);
+  }
+  
+  /* TRANSACTIONS TABLE */
+  .transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    transition: all 0.3s ease;
+  }
+  
+  .transactions-table th {
+    text-align: left;
+    padding: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .transactions-table th:hover {
+    color: #e6eef8;
+  }
+  
+  .transactions-table th::after {
+    content: "↕";
+    position: absolute;
+    right: 10px;
+    opacity: 0.5;
+  }
+  
+  .transactions-table td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .transactions-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .transactions-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+  
+  .transaction-amount.income {
+    color: var(--success);
+    font-weight: 600;
+  }
+  
+  .transaction-amount.expense {
+    color: var(--danger);
+    font-weight: 600;
+  }
+  
+  .transaction-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.03);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+  }
+  
+  .transaction-category:hover {
+    background: rgba(255,255,255,0.05);
+    transform: translateY(-1px);
+  }
+  
+  .category-icon {
+    font-size: 14px;
+  }
+  
+  .transactions-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  .empty-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #e6eef8;
+  }
+  
+  .empty-text {
+    font-size: 15px;
+    margin-bottom: 24px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* ACTION BUTTONS */
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .action-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e6eef8;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .action-btn:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* PAGINATION */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 20px 0;
+  }
+  
+  .pagination-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .pagination-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: #e6eef8;
+    transform: translateY(-2px);
+  }
+  
+  .pagination-btn.active {
+    background: var(--accent-green);
+    color: white;
+    border-color: var(--accent-green);
+  }
+  
+  /* ADD TRANSACTION MODAL */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+  }
+  
+  .modal-content {
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 25px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.05);
+    animation: modalAppear 0.3s ease;
+  }
+  
+  @keyframes modalAppear {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    color: #e6eef8;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 24px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+  
+  .close-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  
+  .form-input, .form-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(15, 23, 42, 0.7);
+    color: #e6eef8;
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+  
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .form-row .form-group {
+    flex: 1;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent-green), #16a34a);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  }
+  
+  .submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  
+  /* BRIGHT THEME OVERRIDES */
+  .bright-theme .filters {
+    background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5));
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), inset 0 1px rgba(255,255,255,0.5);
+  }
+  
+  .bright-theme .filters::after {
+    box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.2) inset;
+  }
+  
+  .bright-theme .filter-select {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0,0,0,0.15);
+    color: #1f2937;
+  }
+  
+  .bright-theme .search-container {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+  
+  .bright-theme .search-input {
+    color: #1f2937;
+  }
+  
+  .bright-theme .search-input::placeholder {
+    color: #6b7280;
+  }
+  
+  .bright-theme .transactions-table th {
+    color: #6b7280;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .bright-theme .transactions-table td {
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+  }
+  
+  .bright-theme .transactions-table tr:hover td {
+    background: rgba(217, 119, 6, 0.05);
+  }
+  
+  .bright-theme .transaction-category {
+    background: rgba(217, 119, 6, 0.1);
+    color: #92400e;
+  }
+  
+  .bright-theme .transactions-empty {
+    color: #6b7280;
+  }
+  
+  .bright-theme .empty-title {
+    color: #1f2937;
+  }
+  
+  .bright-theme .action-btn {
+    background: rgba(217, 119, 6, 0.1);
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    color: #92400e;
+  }
+  
+  .bright-theme .action-btn:hover {
+    background: rgba(217, 119, 6, 0.2);
+  }
+  
+  .bright-theme .pagination-btn {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.1);
+    color: #6b7280;
+  }
+  
+  .bright-theme .pagination-btn:hover {
+    background: rgba(217, 119, 6, 0.2);
+    color: #92400e;
+  }
+  
+  .bright-theme .pagination-btn.active {
+    background: var(--gold);
+    color: white;
+    border-color: var(--gold);
+  }
+  
+  .bright-theme .modal-content {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  .bright-theme .modal-header h2 {
+    color: #1f2937;
+  }
+  
+  .bright-theme .form-input, 
+  .bright-theme .form-select {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0,0,0,0.15);
+    color: #1f2937;
+  }
+  
+  .bright-theme .form-label {
+    color: #6b7280;
+  }
+  
+  @media (max-width: 768px) {
+    .filter-group {
+      min-width: 120px;
+    }
+    
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .transactions-table {
+      font-size: 13px;
+    }
+    
+    .transactions-table th,
+    .transactions-table td {
+      padding: 12px 8px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .filters {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .filter-group {
+      min-width: 100%;
+    }
+    
+    .header {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="logo">$</div>
+        <div>
+          <h1>GenZ Wallet</h1>
+          <small>Elite Finance</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="menu" role="navigation">
+      <a href="Gen_wallet_dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="Gen_wallet_calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+      <a href="Gen_wallet_Transaction.html" class="active"><span class="nav-icon">💵</span><span class="nav-label">Transactions</span></a>
+      <a href="Gen_wallet_goal.html"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a href="Gen_wallet_cap.html"><span class="nav-icon">🛡️</span><span class="nav-label">Spending Caps</span></a>
+      <a href="Gen_wallet_Invest.html"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></a>
+      <a href="Gen_wallet_Import.html"><span class="nav-icon">⬆️</span><span class="nav-label">Import</span></a>
+      <a href="Gen_wallet_AI.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+      <a href="Gen_wallet_Learn.html"><span class="nav-icon">📘</span><span class="nav-label">Learn</span></a>
+      <a href="Gen_wallet_learderborad.html"><span class="nav-icon">🏆</span><span class="nav-label">Leaderboard</span></a>
+    </nav>
+    
+    <button id="themeToggle" class="theme-toggle">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-text">Light Theme</span>
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="header">
+      <div class="header-content">
+        <h1>Transactions</h1>
+        <p>Manage your income and expenses</p>
+      </div>
+      <button class="btn btn-primary" id="addTransactionBtn">+ Add Transaction</button>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <span class="filter-label">Search</span>
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Search transactions..." id="searchInput">
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <span class="filter-label">Filter by Type</span>
+        <select class="filter-select" id="typeFilter">
+          <option value="all">All Transactions</option>
+          <option value="income">Income</option>
+          <option value="expense">Expenses</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <span class="filter-label">Sort by</span>
+        <select class="filter-select" id="sortFilter">
+          <option value="date-desc">Date (Newest)</option>
+          <option value="date-asc">Date (Oldest)</option>
+          <option value="amount-desc">Amount (Highest)</option>
+          <option value="amount-asc">Amount (Lowest)</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <span class="filter-label">Category</span>
+        <select class="filter-select" id="categoryFilter">
+          <option value="all">All Categories</option>
+          <option value="food">Food & Dining</option>
+          <option value="shopping">Shopping</option>
+          <option value="transportation">Transportation</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="utilities">Utilities</option>
+          <option value="salary">Salary</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Recent Transactions</h2>
+      </div>
+      
+      <div class="transactions-empty" id="emptyState">
+        <div class="empty-icon">💳</div>
+        <div class="empty-title">No Transactions Found</div>
+        <div class="empty-text">Add your first transaction to get started and track your income and expenses.</div>
+        <button class="btn btn-primary" id="addFirstTransaction">Add Transaction</button>
+      </div>
+      
+      <table class="transactions-table" id="transactionsTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody id="transactionsBody">
+          <!-- Transactions will be populated here -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="pagination" id="pagination">
+      <!-- Pagination will be populated here -->
+    </div>
+  </main>
+  
+  <!-- ADD TRANSACTION MODAL -->
+  <div class="modal" id="transactionModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Transaction</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+      <form id="transactionForm">
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-input" id="description" placeholder="Enter description" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Amount ($)</label>
+            <input type="number" class="form-input" id="amount" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="date" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="type" required>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="category" required>
+              <option value="food">Food & Dining</option>
+              <option value="shopping">Shopping</option>
+              <option value="transportation">Transportation</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="utilities">Utilities</option>
+              <option value="salary">Salary</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn">Save Transaction</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+<script>
+  // Toggle sidebar functionality
+  document.querySelector('.brand').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('full-width');
+  });
+  
+  // nav active toggle (visual only)
+  document.querySelectorAll('nav.menu a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.menu a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+  
+  // Theme toggle functionality with global sync
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.querySelector('.theme-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  // Load saved theme preference
+  function loadThemePreference() {
+    const savedTheme = localStorage.getItem('genzWalletTheme');
+    if (savedTheme === 'bright') {
+      document.body.classList.add('bright-theme');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+    } else {
+      document.body.classList.remove('bright-theme');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+    }
+  }
+  
+  // Save theme preference
+  function saveThemePreference(theme) {
+    localStorage.setItem('genzWalletTheme', theme);
+  }
+  
+  // Toggle theme
+  themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('bright-theme');
+    
+    if (document.body.classList.contains('bright-theme')) {
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+      saveThemePreference('bright');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+      saveThemePreference('dark');
+    }
+    
+    // Notify other tabs/windows of theme change
+    localStorage.setItem('themeChange', Date.now());
+  });
+  
+  // Listen for theme changes from other tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'themeChange') {
+      loadThemePreference();
+    }
+  });
+  
+  // Load theme on page load
+  loadThemePreference();
+  
+  // Transaction functionality
+  const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  const transactionsBody = document.getElementById('transactionsBody');
+  const emptyState = document.getElementById('emptyState');
+  const transactionModal = document.getElementById('transactionModal');
+  const transactionForm = document.getElementById('transactionForm');
+  const addTransactionBtn = document.getElementById('addTransactionBtn');
+  const addFirstTransaction = document.getElementById('addFirstTransaction');
+  const closeModal = document.getElementById('closeModal');
+  const searchInput = document.getElementById('searchInput');
+  const typeFilter = document.getElementById('typeFilter');
+  const sortFilter = document.getElementById('sortFilter');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const pagination = document.getElementById('pagination');
+  
+  let currentPage = 1;
+  const transactionsPerPage = 5;
+  
+  // Initialize with today's date
+  document.getElementById('date').valueAsDate = new Date();
+  
+  // Show empty state or transactions
+  function updateTransactionsDisplay() {
+    if (transactions.length === 0) {
+      emptyState.style.display = 'block';
+      document.getElementById('transactionsTable').style.display = 'none';
+      pagination.style.display = 'none';
+    } else {
+      emptyState.style.display = 'none';
+      document.getElementById('transactionsTable').style.display = 'table';
+      renderTransactions();
+      renderPagination();
+    }
+  }
+  
+  // Render transactions with filtering and sorting
+  function renderTransactions() {
+    // Get filter values
+    const searchTerm = searchInput.value.toLowerCase();
+    const typeValue = typeFilter.value;
+    const sortValue = sortFilter.value;
+    const categoryValue = categoryFilter.value;
+    
+    // Filter transactions
+    let filteredTransactions = transactions.filter(transaction => {
+      const matchesSearch = transaction.description.toLowerCase().includes(searchTerm);
+      const matchesType = typeValue === 'all' || transaction.type === typeValue;
+      const matchesCategory = categoryValue === 'all' || transaction.category === categoryValue;
+      
+      return matchesSearch && matchesType && matchesCategory;
+    });
+    
+    // Sort transactions
+    filteredTransactions.sort((a, b) => {
+      switch (sortValue) {
+        case 'date-desc':
+          return new Date(b.date) - new Date(a.date);
+        case 'date-asc':
+          return new Date(a.date) - new Date(b.date);
+        case 'amount-desc':
+          return b.amount - a.amount;
+        case 'amount-asc':
+          return a.amount - b.amount;
+        default:
+          return new Date(b.date) - new Date(a.date);
+      }
+    });
+    
+    // Pagination
+    const startIndex = (currentPage - 1) * transactionsPerPage;
+    const endIndex = startIndex + transactionsPerPage;
+    const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+    
+    // Render transactions
+    transactionsBody.innerHTML = '';
+    
+    if (paginatedTransactions.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td colspan="4" style="text-align: center; padding: 20px; color: var(--muted);">
+          No transactions match your filters
+        </td>
+      `;
+      transactionsBody.appendChild(row);
+      return;
+    }
+    
+    paginatedTransactions.forEach(transaction => {
+      const row = document.createElement('tr');
+      
+      // Format date
+      const date = new Date(transaction.date);
+      const formattedDate = date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      
+      // Category icons
+      const categoryIcons = {
+        food: '🛒',
+        shopping: '🛍️',
+        transportation: '🚗',
+        entertainment: '🎬',
+        utilities: '💡',
+        salary: '💼',
+        other: '📦'
+      };
+      
+      row.innerHTML = `
+        <td>${formattedDate}</td>
+        <td>${transaction.description}</td>
+        <td>
+          <span class="transaction-category">
+            <span class="category-icon">${categoryIcons[transaction.category] || '📦'}</span>
+            ${transaction.category.charAt(0).toUpperCase() + transaction.category.slice(1)}
+          </span>
+        </td>
+        <td class="transaction-amount ${transaction.type}">
+          ${transaction.type === 'income' ? '+' : '-'}$${transaction.amount.toFixed(2)}
+        </td>
+      `;
+      
+      transactionsBody.appendChild(row);
+    });
+  }
+  
+  // Render pagination
+  function renderPagination() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const typeValue = typeFilter.value;
+    const categoryValue = categoryFilter.value;
+    
+    // Filter transactions for pagination calculation
+    let filteredTransactions = transactions.filter(transaction => {
+      const matchesSearch = transaction.description.toLowerCase().includes(searchTerm);
+      const matchesType = typeValue === 'all' || transaction.type === typeValue;
+      const matchesCategory = categoryValue === 'all' || transaction.category === categoryValue;
+      
+      return matchesSearch && matchesType && matchesCategory;
+    });
+    
+    const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
+    
+    if (totalPages <= 1) {
+      pagination.style.display = 'none';
+      return;
+    }
+    
+    pagination.style.display = 'flex';
+    pagination.innerHTML = '';
+    
+    // Previous button
+    if (currentPage > 1) {
+      const prevBtn = document.createElement('button');
+      prevBtn.classList.add('pagination-btn');
+      prevBtn.innerHTML = '‹';
+      prevBtn.addEventListener('click', () => {
+        currentPage--;
+        renderTransactions();
+        renderPagination();
+      });
+      pagination.appendChild(prevBtn);
+    }
+    
+    // Page buttons
+    for (let i = 1; i <= totalPages; i++) {
+      const pageBtn = document.createElement('button');
+      pageBtn.classList.add('pagination-btn');
+      if (i === currentPage) {
+        pageBtn.classList.add('active');
+      }
+      pageBtn.textContent = i;
+      pageBtn.addEventListener('click', () => {
+        currentPage = i;
+        renderTransactions();
+        renderPagination();
+      });
+      pagination.appendChild(pageBtn);
+    }
+    
+    // Next button
+    if (currentPage < totalPages) {
+      const nextBtn = document.createElement('button');
+      nextBtn.classList.add('pagination-btn');
+      nextBtn.innerHTML = '›';
+      nextBtn.addEventListener('click', () => {
+        currentPage++;
+        renderTransactions();
+        renderPagination();
+      });
+      pagination.appendChild(nextBtn);
+    }
+  }
+  
+  // Open modal for adding transaction
+  function openAddTransactionModal() {
+    document.getElementById('modalTitle').textContent = 'Add Transaction';
+    transactionForm.reset();
+    document.getElementById('date').valueAsDate = new Date();
+    transactionModal.style.display = 'flex';
+  }
+  
+  // Close modal
+  function closeTransactionModal() {
+    transactionModal.style.display = 'none';
+  }
+  
+  // Event listeners
+  addTransactionBtn.addEventListener('click', openAddTransactionModal);
+  addFirstTransaction.addEventListener('click', openAddTransactionModal);
+  closeModal.addEventListener('click', closeTransactionModal);
+  
+  window.addEventListener('click', (e) => {
+    if (e.target === transactionModal) {
+      closeTransactionModal();
+    }
+  });
+  
+  // Form submission
+  transactionForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const transaction = {
+      id: Date.now(),
+      description: document.getElementById('description').value,
+      amount: parseFloat(document.getElementById('amount').value),
+      date: document.getElementById('date').value,
+      type: document.getElementById('type').value,
+      category: document.getElementById('category').value
+    };
+    
+    transactions.push(transaction);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+    
+    closeTransactionModal();
+    updateTransactionsDisplay();
+  });
+  
+  // Filter event listeners
+  searchInput.addEventListener('input', () => {
+    currentPage = 1;
+    renderTransactions();
+    renderPagination();
+  });
+  
+  typeFilter.addEventListener('change', () => {
+    currentPage = 1;
+    renderTransactions();
+    renderPagination();
+  });
+  
+  sortFilter.addEventListener('change', () => {
+    renderTransactions();
+  });
+  
+  categoryFilter.addEventListener('change', () => {
+    currentPage = 1;
+    renderTransactions();
+    renderPagination();
+  });
+  
+  // Initialize
+  updateTransactionsDisplay();
+</script>
+</html>

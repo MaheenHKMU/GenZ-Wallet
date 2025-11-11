@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Leaderboard — GenZ Wallet</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  /* ---------- LEADERBOARD SPECIFIC STYLES ---------- */
+  .header {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  
+  .header::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.06) inset;
+  }
+  
+  .header-content h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(to right, var(--gold), var(--accent-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .header-content p {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  /* FILTERS */
+  .filters {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+  }
+  
+  .filter-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #e6eef8;
+    border-radius: var(--radius);
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: linear-gradient(145deg, var(--gold), var(--accent-yellow));
+    color: #0b1220;
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+  
+  /* STATS CARDS */
+  .stats {
+    margin: 32px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.06) inset;
+  }
+  
+  .stat-title {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  
+  .stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(to right, #e6eef8, #cbd5e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* TOP SAVERS */
+  .top-savers {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 36px;
+  }
+  
+  .top-savers::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.06) inset;
+  }
+  
+  .top-savers h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    color: var(--gold);
+  }
+  
+  .saver-list {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+  }
+  
+  .saver {
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+    border-radius: var(--radius);
+    padding: 20px;
+    width: 150px;
+    transition: all 0.3s ease;
+  }
+  
+  .saver:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.05);
+  }
+  
+  .saver.gold { 
+    border: 2px solid var(--gold); 
+    box-shadow: 0 8px 24px rgba(250, 204, 21, 0.2);
+  }
+  
+  .saver.silver { 
+    border: 2px solid #cbd5e1; 
+    box-shadow: 0 8px 24px rgba(203, 213, 225, 0.2);
+  }
+  
+  .saver.bronze { 
+    border: 2px solid #f97316; 
+    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.2);
+  }
+  
+  .saver-name {
+    font-weight: 700;
+    margin-top: 12px;
+    font-size: 16px;
+  }
+  
+  .saver-score {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent-green);
+    margin: 8px 0;
+  }
+  
+  .saver-streak {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  
+  /* FULL RANKINGS */
+  .rankings {
+    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .rankings::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.06) inset;
+  }
+  
+  .rankings h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    color: var(--gold);
+  }
+  
+  .rank-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    transition: background 0.2s;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  .rank-item:hover { 
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.05);
+  }
+  
+  .rank-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .rank-num {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--gold);
+    min-width: 30px;
+  }
+  
+  .rank-name { 
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .rank-email { 
+    font-size: 13px; 
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  
+  .rank-score { 
+    font-weight: 800; 
+    color: var(--accent-green);
+    font-size: 18px;
+  }
+  
+  .rank-streak { 
+    font-size: 13px; 
+    color: var(--muted);
+  }
+  
+  .you {
+    background: linear-gradient(145deg, rgba(139,92,246,0.2), rgba(67,56,202,0.1));
+    border: 1px solid rgba(139,92,246,0.4);
+  }
+  
+  .you .rank-num {
+    color: #8b5cf6;
+  }
+</style>
+</head>
+
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="logo">$</div>
+        <div>
+          <h1>GenZ Wallet</h1>
+          <small>Elite Finance</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="menu" role="navigation">
+      <a href="Gen_wallet_dashboard.html"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="Gen_wallet_calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+      <a href="Gen_wallet_Transaction.html"><span class="nav-icon">💵</span><span class="nav-label">Transactions</span></a>
+      <a href="Gen_wallet_goal.html"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a href="Gen_wallet_cap.html"><span class="nav-icon">🛡️</span><span class="nav-label">Spending Caps</span></a>
+      <a href="Gen_wallet_Invest.html"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></a>
+      <a href="Gen_wallet_Import.html"><span class="nav-icon">⬆️</span><span class="nav-label">Import</span></a>
+      <a href="Gen_wallet_AI.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+      <a href="Gen_wallet_Learn.html"><span class="nav-icon">📘</span><span class="nav-label">Learn</span></a>
+      <a href="Gen_wallet_learderborad.html" class="active"><span class="nav-icon">🏆</span><span class="nav-label">Leaderboard</span></a>
+    </nav>
+    
+    <button id="themeToggle" class="theme-toggle">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-text">Light Theme</span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="header">
+      <div class="header-content">
+        <h1>Leaderboard 🏆</h1>
+        <p>Compete with friends and stay motivated!</p>
+      </div>
+      <button class="btn btn-primary">👥 Invite Friends</button>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active">7 Days</button>
+      <button class="filter-btn">30 Days</button>
+      <button class="filter-btn">All Time</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-title">Your Rank</div>
+        <div class="stat-value">#4</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Savings %</div>
+        <div class="stat-value">85%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Streak</div>
+        <div class="stat-value">7 🔥</div>
+      </div>
+    </div>
+
+    <div class="top-savers">
+      <h3>Top Savers</h3>
+      <div class="saver-list">
+        <div class="saver silver">
+          <div>🥈</div>
+          <div class="saver-name">Sarah Kim</div>
+          <div class="saver-score">91.2%</div>
+          <div class="saver-streak">10 day streak</div>
+        </div>
+        <div class="saver gold">
+          <div>🏆</div>
+          <div class="saver-name">Alex Chen</div>
+          <div class="saver-score">94.5%</div>
+          <div class="saver-streak">12 day streak</div>
+        </div>
+        <div class="saver bronze">
+          <div>🥉</div>
+          <div class="saver-name">Mike Johnson</div>
+          <div class="saver-score">87.8%</div>
+          <div class="saver-streak">8 day streak</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rankings">
+      <h3>Full Rankings</h3>
+      <div class="rank-item">
+        <div class="rank-info">
+          <div class="rank-num">#1</div>
+          <div>
+            <div class="rank-name">Alex Chen</div>
+            <div class="rank-email">alex@example.com</div>
+          </div>
+        </div>
+        <div>
+          <div class="rank-score">94.5%</div>
+          <div class="rank-streak">12 day streak 🔥</div>
+        </div>
+      </div>
+      <div class="rank-item">
+        <div class="rank-info">
+          <div class="rank-num">#2</div>
+          <div>
+            <div class="rank-name">Sarah Kim</div>
+            <div class="rank-email">sarah@example.com</div>
+          </div>
+        </div>
+        <div>
+          <div class="rank-score">91.2%</div>
+          <div class="rank-streak">10 day streak 🔥</div>
+        </div>
+      </div>
+      <div class="rank-item">
+        <div class="rank-info">
+          <div class="rank-num">#3</div>
+          <div>
+            <div class="rank-name">Mike Johnson</div>
+            <div class="rank-email">mike@example.com</div>
+          </div>
+        </div>
+        <div>
+          <div class="rank-score">87.8%</div>
+          <div class="rank-streak">8 day streak 🔥</div>
+        </div>
+      </div>
+      <div class="rank-item you">
+        <div class="rank-info">
+          <div class="rank-num">#4</div>
+          <div>
+            <div class="rank-name">You</div>
+            <div class="rank-email">you@example.com</div>
+          </div>
+        </div>
+        <div>
+          <div class="rank-score">85%</div>
+          <div class="rank-streak">7 day streak 🔥</div>
+        </div>
+      </div>
+      <div class="rank-item">
+        <div class="rank-info">
+          <div class="rank-num">#5</div>
+          <div>
+            <div class="rank-name">Emma Davis</div>
+            <div class="rank-email">emma@example.com</div>
+          </div>
+        </div>
+        <div>
+          <div class="rank-score">82.3%</div>
+          <div class="rank-streak">6 day streak 🔥</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+<script>
+  // Toggle sidebar functionality
+  document.querySelector('.brand').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('full-width');
+  });
+  
+  // nav active toggle (visual only)
+  document.querySelectorAll('nav.menu a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.menu a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+  
+  // Filter button functionality
+  document.querySelectorAll('.filter-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      // Remove active class from all buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Add active class to clicked button
+      this.classList.add('active');
+    });
+  });
+  
+  // Theme toggle functionality with global sync
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.querySelector('.theme-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  // Load saved theme preference
+  function loadThemePreference() {
+    const savedTheme = localStorage.getItem('genzWalletTheme');
+    if (savedTheme === 'bright') {
+      document.body.classList.add('bright-theme');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+    } else {
+      document.body.classList.remove('bright-theme');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+    }
+  }
+  
+  // Save theme preference
+  function saveThemePreference(theme) {
+    localStorage.setItem('genzWalletTheme', theme);
+  }
+  
+  // Toggle theme
+  themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('bright-theme');
+    
+    if (document.body.classList.contains('bright-theme')) {
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+      saveThemePreference('bright');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+      saveThemePreference('dark');
+    }
+    
+    // Notify other tabs/windows of theme change
+    localStorage.setItem('themeChange', Date.now());
+  });
+  
+  // Listen for theme changes from other tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'themeChange') {
+      loadThemePreference();
+    }
+  });
+  
+  // Load theme on page load
+  loadThemePreference();
+</script>
+</html>

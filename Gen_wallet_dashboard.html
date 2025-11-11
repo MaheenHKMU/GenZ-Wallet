@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SmartShift — Dark Dashboard (Replica + Sidebar)</title>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  /* ---------- DASHBOARD SPECIFIC STYLES ---------- */
+  .welcome {
+    background: linear-gradient(145deg, rgba(14, 23, 42, 0.8), rgba(16, 26, 46, 0.9));
+    border-radius: 14px;
+    padding: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
+                inset 0 1px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  
+  .welcome:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 
+                inset 0 1px rgba(255, 255, 255, 0.08);
+  }
+  
+  .welcome::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(250, 204, 21, 0.1) 0%, transparent 70%);
+    transform: rotate(30deg);
+    z-index: 0;
+  }
+  
+  .welcome-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .welcome h1 {
+    font-size: 26px; 
+    margin: 0; 
+    font-weight: 800; 
+    letter-spacing: 0.2px;
+    background: linear-gradient(to right, #facc15, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .welcome p {
+    margin: 4px 0 0 0;
+    color: var(--muted); 
+    font-size: 13px;
+  }
+  
+  /* ---------- Stats Cards ---------- */
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 8px 0;
+    background: linear-gradient(to right, #e6eef8, #cbd5e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: capitalize;
+    margin-top: auto;
+  }
+  
+  .stat-change {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  
+  .positive {
+    color: var(--success);
+  }
+  
+  .negative {
+    color: var(--danger);
+  }
+  
+  /* ---------- Small Action Tiles ---------- */
+  .small-cta {
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+    padding: 18px; 
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .small-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .small-cta .stat-icon {
+    margin: 0;
+  }
+  
+  .small-cta .stat-label {
+    margin: 0;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  
+  /* ---------- Chart area ---------- */
+  .chart-container {
+    height: 300px;
+    position: relative;
+  }
+  
+  /* ---------- AI insights ---------- */
+  .insights {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .insight-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 8px 24px rgba(2,6,20,0.6), inset 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .insight-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.04) inset;
+  }
+  
+  .insight-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #ffd28a;
+    margin-bottom: 12px;
+  }
+  
+  .insight-item {
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.3s ease;
+  }
+  
+  .insight-item:hover {
+    background: rgba(255,255,255,0.04);
+  }
+  
+  .insight-item small {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  
+  .insight-item p {
+    margin: 6px 0 0 0;
+    font-weight: 600;
+  }
+  
+  /* ---------- Recent Transactions & Goals ---------- */
+  .panel {
+    padding: 18px;
+    border-radius: 12px;
+    min-height: 80px;
+  }
+  
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .panel-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin: 0;
+  }
+  
+  .view-all {
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .view-all:hover {
+    color: var(--gold);
+  }
+  
+  .panel .empty {
+    color: var(--muted); 
+    text-align: center;
+    padding: 40px 0;
+  }
+  
+  /* ---------- Active Goals ---------- */
+  .goal-progress {
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  .goal-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .goal-amount {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="logo">$</div>
+        <div>
+          <h1>GenZ Wallet</h1>
+          <small>Elite Finance</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="menu" role="navigation">
+      <a href="Gen_wallet_dashboard.html" class="active"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a href="Gen_wallet_calendar.html"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></a>
+      <a href="Gen_wallet_Transaction.html"><span class="nav-icon">💵</span><span class="nav-label">Transactions</span></a>
+      <a href="Gen_wallet_goal.html"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a href="Gen_wallet_cap.html"><span class="nav-icon">🛡️</span><span class="nav-label">Spending Caps</span></a>
+      <a href="Gen_wallet_Invest.html"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></a>
+      <a href="Gen_wallet_Import.html"><span class="nav-icon">⬆️</span><span class="nav-label">Import</span></a>
+      <a href="Gen_wallet_AI.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+      <a href="Gen_wallet_Learn.html"><span class="nav-icon">📘</span><span class="nav-label">Learn</span></a>
+      <a href="Gen_wallet_learderborad.html"><span class="nav-icon">🏆</span><span class="nav-label">Leaderboard</span></a>
+    </nav>
+    
+    <button id="themeToggle" class="theme-toggle">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-text">Light Theme</span>
+    </button>
+  </aside>
+
+  <!-- MAIN PAGE -->
+  <div class="main-content">
+    <div class="grid">
+
+      <!-- Welcome Banner -->
+      <div class="col-12">
+        <div class="welcome">
+          <div class="welcome-content">
+            <h1>Welcome Back! <span style="font-size:20px">👋</span></h1>
+            <p>Track your financial journey with intelligent insights</p>
+          </div>
+          <button class="btn btn-primary">+ Add Transaction</button>
+        </div>
+      </div>
+
+      <!-- Top stats (4 equal) -->
+      <div class="col-3">
+        <div class="card stat-card">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#f59e0b,#f39c12)">💲</div>
+          <div class="stat-label">Total Balance</div>
+          <div class="stat-value">$0.00</div>
+          <div class="stat-change positive">↑ $0.00 (0%)</div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="card stat-card">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#ea580c,#f97316)">📈</div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value">$0.00</div>
+          <div class="stat-change negative">↓ $0.00 (0%)</div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="card stat-card">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#10b981,#059669)">🎯</div>
+          <div class="stat-label">Active Goals</div>
+          <div class="stat-value">1</div>
+          <div class="stat-change positive">1 goal</div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="card stat-card">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#c084fc,#7c3aed)">🛡️</div>
+          <div class="stat-label">Budget Status</div>
+          <div class="stat-value">0</div>
+          <div class="stat-change positive">All good</div>
+        </div>
+      </div>
+
+      <!-- Action tiles -->
+      <div class="col-3">
+        <div class="card small-cta" onclick="window.location.href='Gen_wallet_Transaction.html'">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#f97316,#f59e0b)">+</div>
+          <div class="stat-label">Add Transaction</div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="card small-cta">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#34d399,#10b981)">🎯</div>
+          <div class="stat-label">Set Goal</div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="card small-cta">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#7c3aed,#a78bfa)">📅</div>
+          <div class="stat-label">Schedule Shift</div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="card small-cta" onclick="window.location.href='Gen_wallet_AI.html'">
+          <div class="stat-icon" style="background:linear-gradient(145deg,#ef4444,#ef5777)">🤖</div>
+          <div class="stat-label">Ask AI</div>
+        </div>
+      </div>
+
+      <!-- Big chart left (col 8) -->
+      <div class="col-8">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">30-Day Spending Trend</h2>
+          </div>
+          <div class="chart-container">
+            <canvas id="spendChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insights right (col 4) -->
+      <div class="col-4 insights">
+        <div class="insight-card">
+          <div class="insight-title">⚡ AI Insights</div>
+          <div class="insight-item">
+            <small>Spending Pace</small>
+            <p>At your current pace, you'll spend ~$0 this month.</p>
+          </div>
+          <div class="insight-item">
+            <small>Pro Tip</small>
+            <p>Try setting spending caps for dining out to save an extra $50 this month!</p>
+          </div>
+          <div class="insight-item" style="background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);">
+            <small>Good Job!</small>
+            <p>Consider tracking income to see full picture.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions (col 8) -->
+      <div class="col-8">
+        <div class="card panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Recent Transactions</h2>
+            <a href="Gen_wallet_Transaction.html" class="view-all">View All</a>
+          </div>
+          <div class="empty">No transactions yet</div>
+        </div>
+      </div>
+
+      <!-- Active Goals (col 4) -->
+      <div class="col-4">
+        <div class="card panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Active Goals</h2>
+            <a href="#" class="view-all">View All →</a>
+          </div>
+
+          <div class="goal-progress">
+            <div class="goal-title">NEW IPHONE (iPHONE 17 PRO MAX)</div>
+            <div class="goal-amount">$0 of $10000</div>
+            <div class="progress">
+              <div class="progress-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- end grid -->
+  </div> <!-- end main-content -->
+
+<script>
+  // Chart.js 30-day sample
+  const labels = Array.from({length:30}, (_,i)=>{
+    // produce day labels like "Nov 01"
+    const d = new Date(2025,10,1 + i); // month is 0-based, 10 = November
+    return d.toLocaleDateString(undefined,{month:'short',day:'2-digit'});
+  });
+
+  const data = {
+    labels,
+    datasets: [{
+      label: 'Spending',
+      data: labels.map(()=> Math.round(Math.random()*80)/1), // sample zeros / small
+      borderColor: '#60a5fa',
+      backgroundColor: 'rgba(96,165,250,0.08)',
+      tension: 0.3,
+      fill: true,
+      pointRadius: 3,
+      borderWidth: 3,
+      pointBackgroundColor: '#60a5fa',
+      pointBorderColor: '#fff',
+      pointHoverRadius: 6,
+      pointHoverBackgroundColor: '#60a5fa',
+      pointHoverBorderColor: '#fff'
+    }]
+  };
+
+  const config = {
+    type: 'line',
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          titleColor: '#facc15',
+          bodyColor: '#e6eef8',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false
+        }
+      },
+      scales: {
+        x: {
+          grid: { 
+            color: 'rgba(255,255,255,0.03)',
+            borderDash: [2,4] 
+          },
+          ticks: { 
+            color: 'rgba(230,238,248,0.7)', 
+            maxRotation:0, 
+            autoSkip:true, 
+            maxTicksLimit:10 
+          }
+        },
+        y: {
+          grid: { 
+            color: 'rgba(255,255,255,0.03)',
+            borderDash: [2,4] 
+          },
+          ticks: { 
+            color: 'rgba(230,238,248,0.7)',
+            beginAtZero:true, 
+            maxTicksLimit:6 
+          }
+        }
+      },
+      interaction: {
+        mode: 'index',
+        intersect: false
+      }
+    }
+  };
+
+  const ctx = document.getElementById('spendChart').getContext('2d');
+  // create chart instance
+  new Chart(ctx, config);
+
+  // Toggle sidebar functionality
+  document.querySelector('.brand').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('full-width');
+  });
+  
+  // nav active toggle (visual only)
+  document.querySelectorAll('nav.menu a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.menu a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+  
+  // Add hover effects to action tiles
+  document.querySelectorAll('.small-cta').forEach(tile => {
+    tile.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-3px)';
+    });
+    
+    tile.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+  
+  // Theme toggle functionality with global sync
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.querySelector('.theme-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  // Load saved theme preference
+  function loadThemePreference() {
+    const savedTheme = localStorage.getItem('genzWalletTheme');
+    if (savedTheme === 'bright') {
+      document.body.classList.add('bright-theme');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+    } else {
+      document.body.classList.remove('bright-theme');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+    }
+  }
+  
+  // Save theme preference
+  function saveThemePreference(theme) {
+    localStorage.setItem('genzWalletTheme', theme);
+  }
+  
+  // Toggle theme
+  themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('bright-theme');
+    
+    if (document.body.classList.contains('bright-theme')) {
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Theme';
+      saveThemePreference('bright');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Theme';
+      saveThemePreference('dark');
+    }
+    
+    // Notify other tabs/windows of theme change
+    localStorage.setItem('themeChange', Date.now());
+  });
+  
+  // Listen for theme changes from other tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'themeChange') {
+      loadThemePreference();
+    }
+  });
+  
+  // Load theme on page load
+  loadThemePreference();
+</script>
+</body>
+</html>

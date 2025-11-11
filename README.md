@@ -79,19 +79,18 @@ Reels Learning — Finance explained in TikTok-style videos
 Gamified Motivation — Streaks, badges, leaderboards
 Money Buddy Chatbot — Friendly AI coaching
 
-✅ Compatibility
-
+ 
+Compatibility
 ✔ Desktop — Chrome
 ✔ Mobile — Chrome
 
 🏗 Tech
-
 HTML
 CSS
 JavaScript
 
-👥 Team
 
+👥 Team
 GenZ Wallet Team:
 - MOHAMED IMRAN Mohamed Maheen
 - Gurung Albin

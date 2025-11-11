@@ -22,21 +22,21 @@ This repository contains:
 
 📁 root
 
-ALanding_page.html       # Start here → opens landing page
+-> ALanding_page.html       # Start here → opens landing page
 
-landingpage.md           # Documentation for landing page design
+-> landingpage.md           # Documentation for landing page design
 
-chat_homepage.md         # Documentation for main dashboard (MAIN CHAT.MD FILE)
+-> chat_homepage.md         # Documentation for main dashboard (MAIN CHAT.MD FILE)
 
-chat.md                  # Prompt log + AI usage (required)
+-> chat.md                  # Prompt log + AI usage (required)
 
-assets                   # Images, icons, styling assets
+-> assets                   # Images, icons, styling assets
 
-css                      # Stylesheets
+-> css                      # Stylesheets
 
-js                       # Front-end scripts
+-> js                       # Front-end scripts
 
-README.md                # (this file)
+-> README.md                # (this file)
 
 
 ✅ How to Run

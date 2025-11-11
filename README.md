@@ -21,16 +21,23 @@ This repository contains:
 - and this README.md file (this read me file is to guide users to run the code)
 
 📁 root
+
 ALanding_page.html       # Start here → opens landing page
+
 landingpage.md           # Documentation for landing page design
+
 chat_homepage.md         # Documentation for main dashboard (MAIN CHAT.MD FILE)
+
 chat.md                  # Prompt log + AI usage (required)
 
 assets                   # Images, icons, styling assets
+
 css                      # Stylesheets
+
 js                       # Front-end scripts
 
 README.md                # (this file)
+
 
 ✅ How to Run
    Step 1 — Download / Clone    git clone <repo-link>

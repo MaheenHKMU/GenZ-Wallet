@@ -19,7 +19,9 @@ This repository contains:
 - (landingpage.md) 
 - chat_homepage.md (this contains all the main details this will be the chat.md file mentioned in the email)
 - and this README.md file (this read me file is to guide users to run the code)
+  
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 📁 root
 
 -> ALanding_page.html       # Start here → opens landing page
@@ -39,6 +41,7 @@ This repository contains:
 -> README.md                # (this file)
 
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ✅ How to Run
    Step 1 — Download / Clone    git clone <repo-link>
 
@@ -66,6 +69,8 @@ Explore Features
 
 After this, users can browse the product concepts, design layouts, and core functionalities.
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ✅ Files Overview
 
 📄 chat_homepage.md
@@ -85,7 +90,8 @@ Reels Learning — Finance explained in TikTok-style videos
 Gamified Motivation — Streaks, badges, leaderboards
 Money Buddy Chatbot — Friendly AI coaching
 
- 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Compatibility
 ✔ Desktop — Chrome
 ✔ Mobile — Chrome

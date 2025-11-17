@@ -1,4 +1,4 @@
-# GenZ-Wallet (Vibe Coding Challenge Submission)
+# GenZ-Wallet 
 
 This repository is submitted as part of the Vibe Coding Challenge (Round 1 Bonus Challenge) in the JUMPSTARTER ZPIRE AI Innovation Program by Alibaba.
 
